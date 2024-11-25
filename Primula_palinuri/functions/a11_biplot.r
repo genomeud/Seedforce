@@ -112,6 +112,20 @@ unique_pops <- unique(merged_data$POP)
 unique_colors <- unique(merged_data$color_group)
 # Add a legend
 legend("bottomright", legend = unique_pops, col = unique_colors, pch = 16,cex=0.6, title = "Populations")
+  # variance proportion (%)
+  # Extract the proportion of variance for PC1 and PC2
+  pca_summary <- summary(ori.pca)
+  proportion_variance <- pca_summary$importance["Proportion of Variance", c("PC1", "PC2")]  
+pc1_variance <- proportion_variance["PC1"]*100
+pc2_variance <- proportion_variance["PC2"]*100
+# pc1_variance <- round(pc1_variance,2)
+# pc2_variance <- round(pc2_variance,2)
+pc1=1
+pc2=2
+# add the x axis of PC1 for Myles as text
+mtext(paste("PC",pc1," (",round(pc1_variance,2), "%)",sep=""),1,font=2,cex=0.6,line=1.2)
+# add the y axis of PC1 for Myles as text
+mtext(paste("PC",pc2," (",round(pc2_variance,2), "%)",sep=""),2,font=2,cex=0.6,line=1.2)
 dev.off()
 
 # additional plot with individual names and SNPs_ID
@@ -160,6 +174,20 @@ unique_pops <- unique(merged_data$POP)
 unique_colors <- unique(merged_data$color_group)
 # Add a legend
 legend("bottomright", legend = unique_pops, col = unique_colors, pch = 16,cex=0.6, title = "Populations")
+# variance proportion (%)
+# Extract the proportion of variance for PC1 and PC2
+pca_summary <- summary(ori.pca)
+proportion_variance <- pca_summary$importance["Proportion of Variance", c("PC1", "PC2")]  
+pc1_variance <- proportion_variance["PC1"]*100
+pc2_variance <- proportion_variance["PC2"]*100
+# pc1_variance <- round(pc1_variance,2)
+# pc2_variance <- round(pc2_variance,2)
+pc1=1
+pc2=2
+# add the x axis of PC1 for Myles as text
+mtext(paste("PC",pc1," (",round(pc1_variance,2), "%)",sep=""),1,font=2,cex=0.6,line=1.2)
+# add the y axis of PC1 for Myles as text
+mtext(paste("PC",pc2," (",round(pc2_variance,2), "%)",sep=""),2,font=2,cex=0.6,line=1.2)
 dev.off()
 
 top.rotation <- cbind(SNP_ID = rownames(top.rotation), top.rotation)
@@ -199,6 +227,20 @@ unique_pops <- unique(merged_data$POP)
 unique_colors <- unique(merged_data$color_group)
 # Add a legend
 legend("bottomright", legend = unique_pops, col = unique_colors, pch = 16,cex=0.6, title = "Populations")
+# variance proportion (%)
+# Extract the proportion of variance for PC1 and PC2
+pca_summary <- summary(ori.pca)
+proportion_variance <- pca_summary$importance["Proportion of Variance", c("PC1", "PC2")]  
+pc1_variance <- proportion_variance["PC1"]*100
+pc2_variance <- proportion_variance["PC2"]*100
+# pc1_variance <- round(pc1_variance,2)
+# pc2_variance <- round(pc2_variance,2)
+pc1=1
+pc2=2
+# add the x axis of PC1 for Myles as text
+mtext(paste("PC",pc1," (",round(pc1_variance,2), "%)",sep=""),1,font=2,cex=0.6,line=1.2)
+# add the y axis of PC1 for Myles as text
+mtext(paste("PC",pc2," (",round(pc2_variance,2), "%)",sep=""),2,font=2,cex=0.6,line=1.2)
 dev.off()
 
 top.rotation <- cbind(SNP_ID = rownames(top.rotation), top.rotation)
@@ -238,6 +280,20 @@ unique_pops <- unique(merged_data$POP)
 unique_colors <- unique(merged_data$color_group)
 # Add a legend
 legend("bottomright", legend = unique_pops, col = unique_colors, pch = 16,cex=0.6, title = "Populations")
+# variance proportion (%)
+# Extract the proportion of variance for PC1 and PC2
+pca_summary <- summary(ori.pca)
+proportion_variance <- pca_summary$importance["Proportion of Variance", c("PC1", "PC2")]  
+pc1_variance <- proportion_variance["PC1"]*100
+pc2_variance <- proportion_variance["PC2"]*100
+# pc1_variance <- round(pc1_variance,2)
+# pc2_variance <- round(pc2_variance,2)
+pc1=1
+pc2=2
+# add the x axis of PC1 for Myles as text
+mtext(paste("PC",pc1," (",round(pc1_variance,2), "%)",sep=""),1,font=2,cex=0.6,line=1.2)
+# add the y axis of PC1 for Myles as text
+mtext(paste("PC",pc2," (",round(pc2_variance,2), "%)",sep=""),2,font=2,cex=0.6,line=1.2)
 dev.off()
 
 top.rotation <- cbind(SNP_ID = rownames(top.rotation), top.rotation)
@@ -277,6 +333,20 @@ unique_pops <- unique(merged_data$POP)
 unique_colors <- unique(merged_data$color_group)
 # Add a legend
 legend("bottomright", legend = unique_pops, col = unique_colors, pch = 16,cex=0.6, title = "Populations")
+# variance proportion (%)
+# Extract the proportion of variance for PC1 and PC2
+pca_summary <- summary(ori.pca)
+proportion_variance <- pca_summary$importance["Proportion of Variance", c("PC1", "PC2")]  
+pc1_variance <- proportion_variance["PC1"]*100
+pc2_variance <- proportion_variance["PC2"]*100
+# pc1_variance <- round(pc1_variance,2)
+# pc2_variance <- round(pc2_variance,2)
+pc1=1
+pc2=2
+# add the x axis of PC1 for Myles as text
+mtext(paste("PC",pc1," (",round(pc1_variance,2), "%)",sep=""),1,font=2,cex=0.6,line=1.2)
+# add the y axis of PC1 for Myles as text
+mtext(paste("PC",pc2," (",round(pc2_variance,2), "%)",sep=""),2,font=2,cex=0.6,line=1.2)
 dev.off()
 
 top.rotation <- cbind(SNP_ID = rownames(top.rotation), top.rotation)
@@ -316,6 +386,20 @@ unique_pops <- unique(merged_data$POP)
 unique_colors <- unique(merged_data$color_group)
 # Add a legend
 legend("bottomright", legend = unique_pops, col = unique_colors, pch = 16,cex=0.6, title = "Populations")
+# variance proportion (%)
+# Extract the proportion of variance for PC1 and PC2
+pca_summary <- summary(ori.pca)
+proportion_variance <- pca_summary$importance["Proportion of Variance", c("PC1", "PC2")]  
+pc1_variance <- proportion_variance["PC1"]*100
+pc2_variance <- proportion_variance["PC2"]*100
+# pc1_variance <- round(pc1_variance,2)
+# pc2_variance <- round(pc2_variance,2)
+pc1=1
+pc2=2
+# add the x axis of PC1 for Myles as text
+mtext(paste("PC",pc1," (",round(pc1_variance,2), "%)",sep=""),1,font=2,cex=0.6,line=1.2)
+# add the y axis of PC1 for Myles as text
+mtext(paste("PC",pc2," (",round(pc2_variance,2), "%)",sep=""),2,font=2,cex=0.6,line=1.2)
 dev.off()
 
 top.rotation <- cbind(SNP_ID = rownames(top.rotation), top.rotation)
