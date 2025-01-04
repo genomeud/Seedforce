@@ -8,6 +8,4 @@ Twenty-one species were sequenced in pools: Astragalus verrucosus (AVE), Bassia 
 If you want to know more about Seedforce, please visit the [project website](https://lifeseedforce.eu/) 
 
 
-1. [Pool analysis](Pool_analysis)
-
 
