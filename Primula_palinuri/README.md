@@ -14,4 +14,4 @@ Scripts and functions generated in the framework of SEEDFORCE project, financed 
 
 USE
 
-Follow the script a01_de_novo_pipeline_stacks.sh. The folder functions contains all the functions required to run the script.
+Follow the script a01_de_novo_pipeline_stacks.sh. The folder "functions" contains all the functions required to run the script.
