@@ -10,3 +10,8 @@ Population Genetics analysis of Primula palinuri
 
 
 Scripts and functions generated in the framework of SEEDFORCE project, financed by the LIFE program. They were used to analyze dd-RAD sequencing data of Primula palinuri samples to obtain information on polymorphisms and genetic structure. 
+
+
+USE
+
+Follow the steps 
