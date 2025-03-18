@@ -11,7 +11,7 @@ suppressPackageStartupMessages({
   library(optparse)
 })
 
-# Required input files are: missing fileterd vcf and population file. Last option "to_do" needs to be filled with (pca_analysis,ibd_analysis) depending on the analysis to perform
+# Required input files are "missing filtered vcf and population file". Last option "to_do" needs to be filled with (pca_analysis,ibd_analysis) depending on the analysis to perform
 option_list = list(
   make_option(c("-p", "--spp"), type="character",
   default="primula_palinuri",help="spp name [default= %default]", metavar="character"),
@@ -20,7 +20,7 @@ option_list = list(
   make_option(c("-R", "--to_remove"), type="character",
   default="NULL",help="samples separated by comma to remove from the analysis [default= %default]", metavar="character"),
   make_option(c("-P", "--popfile"), type="character",
-  default="raw_reads/sample_ID_and_populations.txt",help="Population file path [default= %default]", metavar="character"),
+  default="/projects/marroni/seedforce/primula_palinuri/raw_reads/sample_ID_and_populations.txt",help="Population file path [default= %default]", metavar="character"),
   make_option(c("-G", "--gdsfile"), type="character",
   default="SNPRelate/primula_palinuri.cov5.info50.gds",help="SNPRelate gds file [default= %default]", metavar="character"),
   make_option(c("-O", "--outpath"), type="character",
@@ -158,10 +158,14 @@ run_pca<-function(spp,vcffile,popfile)
     cex.text=1
     cex.main=1
 
-    out_color=paste(outpath,"PCA.all_snp.",outsuffix,"_low_cov.cov5.info50.jpeg",sep="")
-    jpeg(out_color,width=16,height=8,units="cm",res=300,type="cairo")
+    out_color=paste(outpath,"PCA.all_snp.",outsuffix,"_low_cov.cov5.info50.png",sep="")
+    png(out_color,width=16,height=8,units="cm",res=300,type="cairo")
     par(mgp=c(1.25,0.3,0),oma=c(0.2,0.2,0.05,0.2),mar=c(2,3,1,1))
-
+    # ,width=6,height=3
+    # out_color=paste(outpath,"PCA.all_snp.",outsuffix,"_low_cov.cov5.info50.pdf",sep="")
+    # pdf(out_color,width=10,length=5)
+    # par(mgp=c(3,3,3,3),oma=c(2,2,2,2),mar=c(2,3,1,1))
+    
     #################
     # ASSIGN COLORS #
     #################
@@ -219,8 +223,14 @@ run_pca<-function(spp,vcffile,popfile)
 
 	pc1=1
 	pc2=2
-	plot(test$EV1,test$EV2,col=test$color_group,cex=cex.cross,pch=c(0),xlim=c(x_le,x_ri),ylim=c(y_low,y_up),xlab="",ylab="",font.lab=2,las=1,cex.axis=cex.axis,xaxt="n",yaxt="n",tck=-0.01,main=c(expression(paste(italic("PCA")))),cex.main=cex.main)
-    
+	plot(test$EV1,test$EV2,col=test$color_group,cex=cex.cross,pch=c(0),xlim=c(x_le,x_ri),ylim=c(y_low,y_up),xlab="",ylab="",font.lab=2,las=1,cex.axis=cex.axis,xaxt="n",yaxt="n",tck=-0.01)   
+    pos=1
+    cex_text=1.25
+    # add the panel letter
+    mtext(paste0("(", tolower(LETTERS[pos]), ")"), 2,line=0,at=0,padj=-9,adj=2,cex=cex_text,las=2,font=2)
+
+    # pos=pos+1
+
 	########
 	# AXES #
 	########
@@ -238,7 +248,7 @@ run_pca<-function(spp,vcffile,popfile)
 	# LEGEND #
 	##########
     par(family="Calibri")
-    legend("bottomright",legend=c(expression(paste(italic("LAM"))),expression(paste(italic("FIU"))),expression(paste(italic("ID"))),expression(paste(italic("PC"))),expression(paste(italic("SGP"))),expression(paste(italic("CIM"))),expression(paste(italic("PPA")))),text.col=c(c(color_list)[1:7]),ncol=1,x.intersp=0.7,text.font=c(4),cex=cex.legend,pch=c(0),col=c(c(color_list)[1:7]),bty = "n",bg =NA)
+    legend("bottomright",legend=c("LAM","FIU","ID","PC","SGP","CIM","PPA"),text.col=c(c(color_list)[1:7]),ncol=1,x.intersp=0.7,text.font=c(4),cex=cex.legend,pch=c(0),col=c(c(color_list)[1:7]),bty = "n",bg =NA)
     dev.off()
 
     snpgdsClose(genofile)
@@ -301,12 +311,12 @@ run_ibd<-function(gdsfile,to_remove,popfile,within,ibdmatfile,maf,missingness,LD
 
     # create also vs all population
     intra2<-ibd.coeff
-    intra2$POP1<-"all"
+    intra2$POP1<-"ALL"
 
     intra<-rbind(intra,intra2)
     #Plot within pop relatedness
 
-    intra$POP1<-factor(intra$POP1,levels=c("LAM","FIU","ID","PC","SGP","CIM","PPA","all"))
+    intra$POP1<-factor(intra$POP1,levels=c("LAM","FIU","ID","PC","SGP","CIM","PPA","ALL"))
     color<-c("gray68","orchid2","seagreen","tomato2","hotpink4","steelblue","lightgoldenrod","white")
  
     # ---------------------- #
@@ -328,115 +338,259 @@ run_ibd<-function(gdsfile,to_remove,popfile,within,ibdmatfile,maf,missingness,LD
 
     # create a new distribution which include all samples 
     out2=out
-    out2$POP1="all"
+    out2$POP1="ALL"
     out<-rbind(out,out2)
 
-    ################
-    # PLOT drawing # 
-    ################
+############################################################ 
+# Observed heterozygosity distribution for each population #
+############################################################
+    
+library(vcfR)
 
-    # draw a merged plot that integrate kinship + inbreeding
-    res=1200
-    cex.text=0.6
-    cex_text=1.6
-    cex.axis=0.75
-    cex.significance=1
-    cex.lab=1
-    ylas=1
-    pos=1
+# Read vcf file
+vcff <- "/projects/marroni/seedforce/primula_palinuri/github/tests/populations.snps.filtered.recode_MIS_filt_header.vcf"
+invcf <- vcff
+vcf <- read.vcfR(invcf)
+# extract genotypes
+gt <- extract.gt(vcf)
+# Function to count heterozygous genotypes
+count_het <- function(genotypes) {
+  sum(grepl("^0[/]1$|^1[/]0$", genotypes))
+}
+# Function to count informative SNPs (non-missing)
+count_informative <- function(genotypes) {
+  sum(grepl("^0[/]1$|^1[/]0$|^0[/]0$|^1[/]1$", genotypes))
+}
+# Function to count ALL SNPs (even missing)
+count_all <- function(genotypes) {
+  length(genotypes)
+}
+# Function to extract the third argument from the individual name (population name)
+extract_third_argument <- function(name) {
+  parts <- strsplit(name, "-")[[1]]
+  if (length(parts) >= 3) {
+    return(parts[3])
+  } else {
+    return(NA)
+  }
+}
+# Apply the functions to each individual
+het_counts <- apply(gt, 2, count_het)
+informative_counts <- apply(gt, 2, count_informative)
+total_counts <- apply(gt, 2, count_all)
+individual_names <- colnames(gt)
+third_arguments <- sapply(individual_names, extract_third_argument)
+# average het SNPs
+ratio <- het_counts / informative_counts
+result <- data.frame(
+  Individual = colnames(gt),
+  Population = third_arguments,
+  Heterozygous_Count = het_counts,
+  Informative_SNP_Count = informative_counts,
+  Total_SNP_Count = total_counts,
+  Heterozygous_Ratio = ratio
+)
+# sort by ID
+# result <- result[order(Individual),]
 
-    outfile<-paste(dirname(within),"/kinship_within.inbreeding_coefficient.v2.jpeg",sep="")
-    jpeg(outfile,width=16,height=12,units="cm",res=res, type="cairo")
-    par(mar=c(0.8,3,1.2,0.1), mgp=c(1.6,0.5,0),tck=-0.03,oma=c(1.5,0.1,0.3,0.1),mfrow=c(2,1))
+write.table(result, "genotype_counts.tbl", row.names = FALSE, quote=FALSE,sep="\t")
 
-    ###################
-    # PLOT A # whitin #
-    ###################
 
-    posi<-boxplot(intra$kinship~intra$POP1,col=color,cex.axis=0.8,ylab="",xlab="",font=2,yaxt="n",xaxt="n",ylim=c(-0.02,0.5))
-    axis(2,line=0,las=ylas,cex.axis=cex.axis,mgp=c(0,0.5,0))
-    mtext("Kinship coefficient",2,font=2,line=1.8,cex=cex.lab)
-    # add the panel letter
-    mtext(LETTERS[pos],2,line=2,at=0,padj=-8.5,adj=1,cex=cex_text,las=2,font=2)
-    pos=pos+1
+library(ggplot2)
+library(dplyr)
+library(multcompView)
+# include group with population called all including all individuals 
+all <- result
+all$Population <- "ALL"
+ # browser()
+result <- data.frame(
+  Individual = colnames(gt),
+  Population = third_arguments,
+  Heterozygous_Count = het_counts,
+  Informative_SNP_Count = informative_counts,
+  Total_SNP_Count = total_counts,
+  Heterozygous_Ratio = ratio
+)
+result <- rbind(result, all)
+result <- head(result, -1)
+full <- result[,c(6,2)]
 
-    # add the pairwise wilcoxon test 
-    # create a dataframe with the values from the matrix     
-    pp<-pairwise.wilcox.test(intra$kinship,intra$POP1,p.adjust.method="none", paired = FALSE, exact=FALSE)
-    mymat<-tri_to_squ(pp$p.value)
-    myletters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)
-    print(myletters)
-    print(posi$stats)
+################
+# PLOT drawing # 
+################
+# browser()
+# draw a merged plot that integrate HE + kinship + inbreeding
+res=1600
+cex.text=0.5
+cex_text=0.9
+cex.axis=0.8
+cex.significance=1
+cex.lab=0.55
+ylas=1
+pos=1
+outfile<-paste(dirname(within),"/kinship_within.inbreeding_coefficient.v2.png",sep="")
+png(outfile,width=18,height=7,units="cm",res=res, type="cairo")
+par(mar=c(1.1,3,1.2,0.15), mgp=c(0.6,0.5,0),tck=-0.03,oma=c(1.2,0.1,0.3,0.1),mfrow=c(1,3))
+####################################
+# PLOT A # Observed heterozygosity #
+####################################
+# full$Population <- factor(full$Population, levels = ordine)
+# Re-order the Population factor based on 'ordine'
+# # extract the order (median) of groups
+# ordine<-posi$names[order(posi$stats[3,])] 
+ordine <- c("LAM","FIU","ID","PC","SGP","CIM","PPA","ALL")
+full$Population <- factor(full$Population, levels = ordine)
+posi<-boxplot(full$Heterozygous_Ratio~full$Population,col=color,cex.axis=cex.axis,ylab="",xlab="",font=2,yaxt="n",xaxt="n",ylim=c(-0.02,0.2))
+axis(2,line=0,las=ylas,cex.axis=cex.axis,mgp=c(0,0.5,0))
+mtext("Observed heterozygosity",2,font=2,line=2,cex=cex.lab)
+# add the panel letter
+# mtext(LETTERS[pos],2,line=1,at=0,padj=-7,adj=1,cex=cex_text,las=2,font=2)
+# add the panel letter in the format "(a)"
+mtext(paste0("(", tolower(LETTERS[pos]), ")"), 2, line=1, at=0, padj=-18.6, adj=1, cex=cex_text, las=2, font=2)
+# dev.off()
+pos=pos+1
+# add the pairwise wilcoxon test 
+# create a dataframe with the values from the matrix     
+pp<-pairwise.wilcox.test(full$Heterozygous_Ratio,full$Population,p.adjust.method="none", paired = FALSE, exact=FALSE)
+mymat<-tri_to_squ(pp$p.value)
+myletters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)
+print(myletters)
+print(full$Heterozygous_Ratio)
+# # extract the order (median) of groups
+# Re-order the Population factor based on 'ordine'
+# # extract the order (median) of groups
+ordine<-posi$names[order(posi$stats[3,])] 
+ordine <- c("LAM","FIU","ID","PC","SGP","CIM","PPA","ALL")
+full$Population <- factor(full$Population, levels = ordine)
+# # Order the data frame based on the ordered 'Population' factor
+# full_ordered <- full[order(full$Population), ]
+# full <- full_ordered
+# now need to reassign the corresponding data to the names 
+pp1<-pairwise.wilcox.test(full$Heterozygous_Ratio,full$ordinato,p.adjust.method="none", paired = FALSE)
+# the colum and row have now the ordinato information 
+# colnames(pp1$p.value)<-ordine[-length(ordine)]
+# rownames(pp1$p.value)<-ordine[-1]
+# transfor matrix triangular en cuadrada
+# mymat<-tri_to_squ(pp1$p.value)
+myletters[1]$Letters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)$Letters
+# order back as in boxplot in order to add the text to each box
+# myletters<-myletters[1]$Letters[order(names(myletters[1]$Letters))]
+myletters<-myletters[1]$Letters
+# myletters<-myletters[order(match(as.character(unique(comp1$V2)),names(myletters)))]
+myletters<-myletters[order(match(names(myletters),as.character(levels(full$Population))))]
+print(myletters)
+# for the y positions use 0
+# stat$stats[5,]+(letter_p_shift*(stat$stats[5,])/100)
+text(seq(1,length(posi$names),1),par('usr')[3]-((55*par('usr')[3])/100),myletters,cex=cex.significance,font=2,adj=c(0.5,0.5) )
+# add pop names
+axis(1,at=c(1:8),tick=T,labels=FALSE,adj=0.5,padj=0.5,font=c(4),cex.axis=cex.axis)
+text(c(1:7),-0.043,c("LAM","FIU","ID","PC","SGP","CIM","PPA"),adj=0.5,font=2,cex=0.7,xpd=NA,las=1)
+text(c(8),-0.043,c("ALL"),adj=0.5,font=2,cex=0.7,xpd=NA,las=1)
+text(c(1:7),-0.053,c("n=8","n=12","n=9","n=12","n=12","n=20","n=18"),adj=0.5,font=2,cex=0.57,xpd=NA,las=1)
+text(c(8),-0.053,c("n=91"),adj=0.5,font=2,cex=0.57,xpd=NA,las=1)
 
-    # # extract the order (median) of groups
-    ordine<-posi$names[order(posi$stats[3,])] 
-    lista<-as.list(strsplit(myletters$Letters,split=""))
-    # create a new order based on the median average (obtained from boxplot data)
-    intra$ordinato<-0
-    for(tt in 1:length(ordine)){
-        intra$ordinato[intra$POP1==ordine[tt]]<-tt
-    }
+# padj=0.5,
 
-    # now need to reassign the corresponding data to the names 
-    pp1<-pairwise.wilcox.test(intra$kinship,intra$ordinato,p.adjust.method="none", paired = FALSE)
-    # the colum and row have now the ordinato information 
-    colnames(pp1$p.value)<-ordine[-length(ordine)]
-    rownames(pp1$p.value)<-ordine[-1]
-    # transfor matrix triangular en cuadrada
-    mymat<-tri_to_squ(pp1$p.value)
-    myletters[1]$Letters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)$Letters
-    # order back as in boxplot in order to add the text to each box
-    # myletters<-myletters[1]$Letters[order(names(myletters[1]$Letters))]
-    myletters<-myletters[1]$Letters
-    # myletters<-myletters[order(match(as.character(unique(comp1$V2)),names(myletters)))]
-    myletters<-myletters[order(match(names(myletters),as.character(levels(intra$POP1))))]
-    print(myletters)
-    # for the y positions use 0
-    # stat$stats[5,]+(letter_p_shift*(stat$stats[5,])/100)
-    text(seq(1,length(posi$names),1),par('usr')[3]-((55*par('usr')[3])/100),myletters,cex=cex.significance,font=2,adj=c(0.5,0.5) )
 
-    #############################
-    # PLOT B # inbreeding (MLE) #
-    #############################
-    posi<-boxplot(out$indinb.coeff.mle~out$POP1,col=color,cex.axis=0.8,ylab="",xlab="",lab.font=2,yaxt="n",xaxt="n",ylim=c(0,1))
-    axis(2,line=0,las=ylas,cex.axis=cex.axis,mgp=c(0,0.5,0))
-    mtext("Inbreeding coefficient",2,font=2,line=1.8,cex=cex.lab)
-    axis(1,at=c(1:6),tick=T,labels=FALSE,adj=0.5,padj=0.5,font=c(4),cex.axis=cex.axis)
-    text(c(1:7),-0.18,c("LAM","FIU","ID","PC","SGP","CIM","PPA"),adj=0.5,padj=0.5,font=4,cex=cex.axis,xpd=NA,las=1)
-    text(c(8),-0.18,c("all"),adj=0.5,padj=0.5,font=2,cex=cex.axis,xpd=NA,las=1)
-    # add the panel letter
-    mtext(LETTERS[pos],2,line=2,at=0,padj=-9.3,adj=1,cex=cex_text,las=2,font=2)
+###################
+# PLOT B # whitin #
+###################
 
-    # add the pairwise wilcoxon test 
-    # create a dataframe with the values from the matrix 
-    pp<-pairwise.wilcox.test(out$indinb.coeff.mle,out$POP1,p.adjust.method="none", paired = FALSE)
-    mymat<-tri_to_squ(pp$p.value)
-    myletters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)
-    print(myletters)
-    print(posi$stats)
+write.table(intra, "kinship_values.txt", sep="\t", quote=FALSE)
+posi<-boxplot(intra$kinship~intra$POP1,col=color,cex.axis=cex.axis,ylab="",xlab="",font=2,yaxt="n",xaxt="n",ylim=c(-0.02,0.5))
+axis(2,line=0,las=ylas,cex.axis=cex.axis,mgp=c(0,0.5,0))
+mtext("Kinship coefficient",2,font=2,line=1.8,cex=cex.lab)
+# # add the panel letter
+# mtext(LETTERS[pos],2,line=1,at=0,padj=-7,adj=1,cex=cex_text,las=2,font=2)
+# add the panel letter in the format "(a)"
+mtext(paste0("(", tolower(LETTERS[pos]), ")"), 2, line=1, at=0, padj=-19.6, adj=1, cex=cex_text, las=2, font=2)
+pos=pos+1
+# add the pairwise wilcoxon test 
+# create a dataframe with the values from the matrix     
+pp<-pairwise.wilcox.test(intra$kinship,intra$POP1,p.adjust.method="none", paired = FALSE, exact=FALSE)
+mymat<-tri_to_squ(pp$p.value)
+myletters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)
+print(myletters)
+print(posi$stats)
+# # extract the order (median) of groups
+ordine<-posi$names[order(posi$stats[3,])] 
+lista<-as.list(strsplit(myletters$Letters,split=""))
+# create a new order based on the median average (obtained from boxplot data)
+intra$ordinato<-0
+for(tt in 1:length(ordine)){
+    intra$ordinato[intra$POP1==ordine[tt]]<-tt
+}
+# now need to reassign the corresponding data to the names 
+pp1<-pairwise.wilcox.test(intra$kinship,intra$ordinato,p.adjust.method="none", paired = FALSE)
+# the colum and row have now the ordinato information 
+# colnames(pp1$p.value)<-ordine[-length(ordine)]
+# rownames(pp1$p.value)<-ordine[-1]
+# transfor matrix triangular en cuadrada
+# mymat<-tri_to_squ(pp1$p.value)
+myletters[1]$Letters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)$Letters
+# order back as in boxplot in order to add the text to each box
+# myletters<-myletters[1]$Letters[order(names(myletters[1]$Letters))]
+myletters<-myletters[1]$Letters
+# myletters<-myletters[order(match(as.character(unique(comp1$V2)),names(myletters)))]
+myletters<-myletters[order(match(names(myletters),as.character(levels(intra$POP1))))]
+print(myletters)
+# for the y positions use 0
+# stat$stats[5,]+(letter_p_shift*(stat$stats[5,])/100)
+text(seq(1,length(posi$names),1),par('usr')[3]-((55*par('usr')[3])/100),myletters,cex=cex.significance,font=2,adj=c(0.5,0.5) )
+# add pop names
+axis(1,at=c(1:8),tick=T,labels=FALSE,adj=0.5,padj=0.5,font=c(4),cex.axis=cex.axis)
+text(c(1:7),-0.072,c("LAM","FIU","ID","PC","SGP","CIM","PPA"),adj=0.5,font=2,cex=0.7,xpd=NA,las=1)
+text(c(8),-0.072,c("ALL"),adj=0.5,font=2,cex=0.7,xpd=NA,las=1)
+text(c(1:7),-0.097,c("n=8","n=12","n=9","n=12","n=12","n=20","n=18"),adj=0.5,font=2,cex=0.57,xpd=NA,las=1)
+text(c(8),-0.097,c("n=91"),adj=0.5,font=2,cex=0.57,xpd=NA,las=1)
+# ,padj=0.5
+#############################
+# PLOT C # inbreeding (MLE) #
+#############################
+write.table(out, "IBD_values.txt", sep="\t")
+posi<-boxplot(out$indinb.coeff.mle~out$POP1,col=color,cex.axis=cex.axis,ylab="",xlab="",lab.font=2,yaxt="n",xaxt="n",ylim=c(0,1))
+axis(2,line=0,las=ylas,cex.axis=cex.axis,mgp=c(0,0.5,0))
+mtext("Inbreeding coefficient",2,font=2,line=1.8,cex=cex.lab)
+axis(1,at=c(1:8),tick=T,labels=FALSE,adj=0.5,padj=0.5,font=c(4),cex.axis=cex.axis)
+text(c(1:7),-0.1,c("LAM","FIU","ID","PC","SGP","CIM","PPA"),adj=0.5,padj=0.5,font=2,cex=0.7,xpd=NA,las=1)
+text(c(8),-0.1,c("ALL"),adj=0.5,padj=0.5,font=2,cex=0.7,xpd=NA,las=1)
+text(c(1:7),-0.15,c("n=8","n=12","n=9","n=12","n=12","n=20","n=18"),adj=0.5,font=2,cex=0.57,xpd=NA,las=1)
+text(c(8),-0.15,c("n=91"),adj=0.5,font=2,cex=0.57,xpd=NA,las=1)
 
-    # # extract the order (median) of groups
-    ordine<-posi$names[order(posi$stats[3,])]
-    lista<-as.list(strsplit(myletters$Letters,split=""))
-    # create a new order based on the median average (obtained from boxplot data)
-    out$ordinato<-0
-    for(tt in 1:length(ordine)){
-        out$ordinato[out$POP1==ordine[tt]]<-tt
-    }
-    # now need to reassign the corresponding data to the names 
-    pp1<-pairwise.wilcox.test(out$indinb.coeff.mle,out$ordinato,p.adjust.method="none", paired = FALSE)
-    # the colum and row have now the ordinato information 
-    colnames(pp1$p.value)<-ordine[-length(ordine)]
-    rownames(pp1$p.value)<-ordine[-1]
-    mymat<-tri_to_squ(pp1$p.value)
-    myletters[1]$Letters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)$Letters
-    # order back as in boxplot in order to add the text to each box
-    myletters<-myletters[1]$Letters
-    myletters<-myletters[order(match(names(myletters),as.character(levels(out$POP1))))]
-    print(par('usr')[3])
-    text(seq(1,length(posi$names),1),par('usr')[3]-((125*par('usr')[3])/100),myletters,cex=cex.significance,font=2,adj=c(0.5,0.5) )
-    dev.off()
 
+
+# add the panel letter
+# mtext(LETTERS[pos],2,line=1,at=0,padj=-7.2,adj=1,cex=cex_text,las=2,font=2)
+# add the panel letter in the format "(a)"
+mtext(paste0("(", tolower(LETTERS[pos]), ")"), 2, line=1, at=0, padj=-20.3, adj=1, cex=cex_text, las=2, font=2)
+# add the pairwise wilcoxon test 
+# create a dataframe with the values from the matrix 
+pp<-pairwise.wilcox.test(out$indinb.coeff.mle,out$POP1,p.adjust.method="none", paired = FALSE)
+mymat<-tri_to_squ(pp$p.value)
+myletters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)
+print(myletters)
+print(posi$stats)
+# # extract the order (median) of groups
+ordine<-posi$names[order(posi$stats[3,])]
+lista<-as.list(strsplit(myletters$Letters,split=""))
+# create a new order based on the median average (obtained from boxplot data)
+out$ordinato<-0
+for(tt in 1:length(ordine)){
+    out$ordinato[out$POP1==ordine[tt]]<-tt
+}
+# now need to reassign the corresponding data to the names 
+pp1<-pairwise.wilcox.test(out$indinb.coeff.mle,out$ordinato,p.adjust.method="none", paired = FALSE)
+# the colum and row have now the ordinato information 
+# colnames(pp1$p.value)<-ordine[-length(ordine)]
+# rownames(pp1$p.value)<-ordine[-1]
+# mymat<-tri_to_squ(pp1$p.value)
+myletters[1]$Letters<-multcompLetters(mymat,compare="<=",threshold=0.05,Letters=letters)$Letters
+# order back as in boxplot in order to add the text to each box
+myletters<-myletters[1]$Letters
+myletters<-myletters[order(match(names(myletters),as.character(levels(out$POP1))))]
+# print(par('usr')[3])
+text(seq(1,length(posi$names),1),par('usr')[3]-((125*par('usr')[3])/100),myletters,cex=cex.significance,font=2,adj=c(0.5,0.5) )
+dev.off()
 }
 
 tri_to_squ<-function(x)
@@ -465,3 +619,4 @@ if(to_do=="pca_analysis")
 {
     run_ibd(gdsfile=gdsfile,to_remove=to_remove,popfile=popfile,within=within,ibdmatfile=ibdmatfile,maf=maf,missingness=missingness,LD=LD)
 }
+
