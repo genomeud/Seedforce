@@ -1,5 +1,5 @@
 # Copyright:	    Fabio Marroni and Paloma Perez 2024
-# Aim:              Compute PCA and IBD using library SNPRelate
+# Aim:              Compute PCA, HO and IBD using library SNPRelate
 # To add:		     
 # Suggestions: 
 # Fixes:  
