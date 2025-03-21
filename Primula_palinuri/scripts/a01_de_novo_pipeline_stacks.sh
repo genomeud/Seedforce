@@ -83,7 +83,7 @@ Rscript ${FUNC_DIR}/a03_divide_populations_and_HWE_analysis.r \
 # perform PCA analysis and IBD with SNPRelate
 for step in pca_analysis ibd_analysis 
 do
-    Rscript ${FUNC_DIR}/a04_SNPRelate_PCA_IBD.r \
+    Rscript ${FUNC_DIR}/a04_SNPRelate_PCA_HO_IBD.r \
     -p ${spp} \
     -V ${out2}/populations.snps.filtered.recode_MIS_filt.vcf \
     -P ${raw_files}/sample_ID_and_populations.txt \
