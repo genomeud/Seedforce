@@ -10,3 +10,5 @@ Scripts and functions generated in the framework of SEEDFORCE project, financed 
 USE
 
 Follow the script a01_de_novo_pipeline_stacks.sh. The folder "functions" contains all the functions required to run the script. Other analyses are available in the scripts folder
+
+The relevant paper is "ddRAD sequencing of the endangered species Primula palinuri Petagna reveals high levels of inter-population diversity"
