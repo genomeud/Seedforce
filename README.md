@@ -7,4 +7,5 @@ If you want to know more about Seedforce, please visit the [project website](htt
 
 Below we list the species for which we already deposited code.
 1. [Primula palinuri](Primula_palinuri)
+2. [Linaria_flava](Linaria_flava)
 
