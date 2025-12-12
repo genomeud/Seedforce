@@ -90,9 +90,9 @@ admixture.plot.no_low_cov.cov5.info50<-function(indir,outdir,file.prefix, k_valu
     line_pos<-line_pos+(line_pos*0.25)
     name_pos<-c(line_pos[1]/2, (diff(line_pos)/2+line_pos[-length(line_pos)]))
 
-    # titolo<-paste("L. sardoa (K=", gsub(".Q","",k_value), ")", sep="")
+    # titolo<-paste("D. austriacum (K=", gsub(".Q","",k_value), ")", sep="")
 k_clean <- gsub(".Q", "", k_value)
-titolo <- bquote(italic("L. sardoa") ~ "(K=" * .(k_clean) * ")")
+titolo <- bquote(italic("D. austriacum") ~ "(K=" * .(k_clean) * ")")
 
 
     res=res
@@ -154,4 +154,5 @@ if(to_do=="draw_admixture")
 } else if (to_do=="draw_cross-validation")
 {
     plot_cv_evanno_validation(infile=infile,outdir=outdir,file.prefix=file.prefix,res=1600)
+
 }
