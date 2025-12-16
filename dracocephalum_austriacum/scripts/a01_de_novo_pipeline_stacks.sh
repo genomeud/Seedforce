@@ -164,7 +164,6 @@ Rscript ${FUNC_DIR}/a11_histogram_transition_transversion.r \
 -I ${out2}/SNP_type_final.txt \
 -O ${out2}/
 
-
 # gene flow Nm
 # Wright method for gene flow estimation
 # Nm=(1-Fst)/4Fst
@@ -184,18 +183,4 @@ awk 'NR==1{print; next} {
   }
 }' ${out1}/populations.fst_summary_for_heatmap.tsv | sed 's/NA/0/g' > ${out1}/gene_flow_Nm/Nm_${spp}_sq_matrix.tbl
 
-Rscript ${FUNC_DIR}/a12_Nm_gene_flow --infile ${out1}/gene_flow_Nm/Nm_${spp}_sq_matrix.tbl --outpath ${out1}/gene_flow_Nm/
-
-# mantel test
-
-
-
-
-
-# "test" directory to verify that everything works properly
-spp=dracocephalum_austriacum
-INPUT_DIR=/projects/marroni/seedforce/${spp}
-FUNC_DIR=/projects/marroni/seedforce/${spp}/github/functions
-out1=/projects/marroni/seedforce/${spp}/github/tests
-out2=/projects/marroni/seedforce/${spp}/github/tests
-raw_files=${INPUT_DIR}/raw_reads
+Rscript ${FUNC_DIR}/a12_gene_flow_Nm.r --infile ${out1}/gene_flow_Nm/Nm_${spp}_sq_matrix.tbl --outpath ${out1}/gene_flow_Nm/
